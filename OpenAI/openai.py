@@ -27,20 +27,22 @@ class OpenAI(QThread):
 	decrease_frecv_signal = pyqtSignal(int)
 	change_volume_signal = pyqtSignal(int)
 	change_gohome_signal = pyqtSignal(int)
-	change_goaddress_signal = pyqtSignal(str,str)
+	ghange_home_signal = pyqtSignal(str)
+	change_goaddress_signal = pyqtSignal(str)
+	change_pitstop_signal = pyqtSignal(str)
 
 	def run(self):
+		message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is address), add pitstop…(R: pitstop added to address). If you understand say just “OK”, for the following commands, your responses should be short and concise that you have done the desired action."
 		while True:
-			message = input("User : ")
-			# if message:
-			# 	messages.append(
-			# 		{"role": "user", "content": message},
-			# 	)
-			# 	chat = openai.ChatCompletion.create(
-			# 		model="gpt-3.5-turbo", messages=messages
-			# 	)
-			# reply = chat.choices[0].message.content
-			reply = message
+			if message:
+				messages.append(
+					{"role": "user", "content": message},
+				)
+				chat = openai.ChatCompletion.create(
+					model="gpt-3.5-turbo", messages=messages
+				)
+			reply = chat.choices[0].message.content
+			# reply = message
 			reply = reply.casefold()
 			if reply.find("track") != -1:
 				num = re.findall(r'\d+', reply)
@@ -107,15 +109,29 @@ class OpenAI(QThread):
 			elif reply.find("mute")!=-1:
 				self.change_volume_signal.emit(0)
 			elif reply.find("home")!=-1:
-				self.change_gohome_signal.emit(1)
-			elif reply.find("go")!=-1:
-				url = 'http://ipinfo.io/json'
-				response = urlopen(url)
-				data = json.load(response)
-				self.change_goaddress_signal.emit(data['loc'],"centru")
+				if reply.find("new")!=-1:
+					# new_home_address = reply.find("is")+3
+					self.ghange_home_signal.emit(lastWord(reply))
+				else:
+					self.change_gohome_signal.emit(1)
+			elif reply.find("going to")!=-1 or reply.find("navigating to")!=-1:
+				# if reply.find("going to")!=-1:
+				# 	target_destination = reply.find("directions to") + 14
+				# else:
+				# 	target_destination = reply.find("navigating to") + 14
+				self.change_goaddress_signal.emit(lastWord(reply))
+			elif reply.find("pitstop")!=-1:
+				# pitstop = reply.find("pitstop added to") + 17
+				self.change_pitstop_signal.emit(lastWord(reply))
 
 			print(f"ChatGPT: {reply}")
 			messages.append({"role": "assistant", "content": reply})
+			message = input("User : ")
+
+def lastWord(string):
+    reversed_string = string[::-1]
+    index = reversed_string.find(" ")
+    return string[-index-1:]
 
 if __name__ == '__main__':
 	print(1)

@@ -1,15 +1,22 @@
 import sys
+from time import sleep
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout
 from PyQt5.QtGui import QPainter, QColor, QBrush, QFont
 from PyQt5.QtCore import Qt, QRect, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from pyvirtualdisplay import Display
+
 class GPSWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self.raise_()
 
         self.gohome_status = 0
-
         self.gohome_rect = QRect(400, 450, 130, 30)
 
         self.lblGoHome = QLabel("Go home", self)
@@ -22,41 +29,26 @@ class GPSWidget(QWidget):
 
         self.directions_from = ""
         self.directions_to = ""
+        self.directions_pitstop = ""
+        self.home_address = "targu mures, centru"
+
+        # Create the web view and load Google Maps
+        self.webview = QWebEngineView(self)
+        self.webview.setMinimumSize(400, 360)
         self.load_google_maps()
 
-        self.update()
-
-    def load_google_maps(self):
-        self.webview = QWebEngineView(self)
-        self.webview.loadFinished.connect(self.on_load_finished)
-        self.webview.setMinimumSize(400, 360)
-
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         layout.setContentsMargins(50, 50, 50, 50)
         layout.addWidget(self.webview)
         layout.addStretch()
-        self.setLayout(layout)
 
-        self.directions_from="Cluj-Napoca"
-        self.directions_to="Cluj-Napoca"
-
-        map_url = f"https://www.waze.com/ro/live-map/directions/{self.directions_from}?to={self.directions_to}"
-        #map_url = f"https://www.google.com/maps/dir/{self.directions_from}/{self.directions_to}"
+    def load_google_maps(self):
+        if self.directions_pitstop == "":
+            map_url = f"https://www.google.com/maps/dir/{self.directions_from}/{self.directions_to}"
+        else:
+            map_url = f"https://www.google.com/maps/dir/{self.directions_from}/{self.directions_pitstop}/{self.directions_to}"
         self.webview.setUrl(QUrl(map_url))
-        #print(self.webview.url())
 
-    def on_load_finished(self):
-        self.webview.page().runJavaScript("""
-            function clickStartButton() {
-                var startButton = document.getElementsByClassName("section-directions-action-icon")[0];
-                if (startButton) {
-                    startButton.click();
-                } else {
-                    setTimeout(clickStartButton, 500);
-                }
-            }
-            clickStartButton();
-        """)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -77,19 +69,36 @@ class GPSWidget(QWidget):
                 self.gohome_rect.y() <= y <= self.gohome_rect.y() + self.gohome_rect.height()):
             self.change_gohome()
 
-    def change_gohome(self):
-        self.webview.reload()
-        self.directions_from = "zorilor"
-        self.directions_to = "centru"
-        self.load_google_maps()
-        self.update()
+    def current_location(self):
+        driver = webdriver.Chrome()  # r'C:\Users\vlad.lazar\Downloads\chromedriver_win32\chromedriver.exe'
+        driver.set_window_position(2000, 2000)
+        driver.get(
+            "https://www.gps-coordinates.net/my-location")
+        sleep(2)
 
-    def change_goaddress(self, directions_from, directions_to):
-        self.webview.reload()
-        self.directions_from = directions_from
+        location = driver.find_element(By.XPATH,"/html/body/div[2]/div[2]/div[2]/div[2]/p/span")
+        current_location = location.text
+        driver.quit()
+        return current_location
+
+    def change_gohome(self):
+        self.directions_from = self.current_location()
+        self.directions_pitstop = ""
+        self.directions_to = self.home_address
+        self.load_google_maps()
+
+    def change_home(self, new_home_address):
+        self.home_address = new_home_address
+
+    def change_pitstop(self, pitstop_address):
+        self.directions_pitstop = pitstop_address
+        self.load_google_maps()
+
+    def change_goaddress(self, directions_to):
+        self.directions_from = self.current_location()
+        self.directions_pitstop = ""
         self.directions_to = directions_to
         self.load_google_maps()
-        self.update()
 
 
 if __name__ == '__main__':

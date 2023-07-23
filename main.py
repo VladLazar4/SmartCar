@@ -15,6 +15,7 @@ from OpenAI.openai import OpenAI
 class MainWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self.raise_()
 
         self.climatronic = ClimatronicWidget()
         self.media = MediaWidget()
@@ -36,7 +37,9 @@ class MainWidget(QWidget):
         self.openai.increase_frecv_signal.connect(self.media.increase_frecv)
         self.openai.decrease_frecv_signal.connect(self.media.decrease_frecv)
         self.openai.change_gohome_signal.connect(self.gps.change_gohome)
+        self.openai.ghange_home_signal.connect(self.gps.change_home)
         self.openai.change_goaddress_signal.connect(self.gps.change_goaddress)
+        self.openai.change_pitstop_signal.connect(self.gps.change_pitstop)
         self.openai.change_volume_signal.connect(self.media.change_volume)
         self.openai.start()
 
