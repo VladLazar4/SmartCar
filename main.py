@@ -9,7 +9,8 @@ from GUI.climatronic import ClimatronicWidget
 from GUI.media import MediaWidget
 from GUI.gps import GPSWidget
 from GUI.parking_sensors import ParkingSensorsWidget
-from OpenAI.openai import OpenAI
+from VoiceAssistant.openai import OpenAI
+from VoiceAssistant.voice_assistant import VoiceAssistant
 
 
 class MainWidget(QWidget):
@@ -22,6 +23,7 @@ class MainWidget(QWidget):
         self.gps = GPSWidget()
         self.parking_sensors = ParkingSensorsWidget()
         self.openai = OpenAI()
+        self.voice_assistant = VoiceAssistant()
 
         self.openai.turn_on_ac_signal.connect(self.climatronic.turn_on_ac)
         self.openai.turn_off_ac_signal.connect(self.climatronic.turn_off_ac)
@@ -37,10 +39,12 @@ class MainWidget(QWidget):
         self.openai.increase_frecv_signal.connect(self.media.increase_frecv)
         self.openai.decrease_frecv_signal.connect(self.media.decrease_frecv)
         self.openai.change_gohome_signal.connect(self.gps.change_gohome)
-        self.openai.ghange_home_signal.connect(self.gps.change_home)
+        self.openai.change_home_signal.connect(self.gps.change_home)
         self.openai.change_goaddress_signal.connect(self.gps.change_goaddress)
         self.openai.change_pitstop_signal.connect(self.gps.change_pitstop)
         self.openai.change_volume_signal.connect(self.media.change_volume)
+        self.openai.speak_text_signal.connect(self.voice_assistant.speak_text)
+        self.openai.write_text_signal.connect(self.voice_assistant.write_text)
         self.openai.start()
 
         self.initUI()

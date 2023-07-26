@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QRect
 
 from collections import namedtuple
 
-from OpenAI.openai import OpenAI
+from VoiceAssistant.openai import OpenAI
 
 Point = namedtuple('Point', ['x', 'y'])
 

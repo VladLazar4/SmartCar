@@ -7,9 +7,7 @@ from PyQt5.QtCore import Qt, QRect, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from pyvirtualdisplay import Display
 
 class GPSWidget(QWidget):
     def __init__(self):
@@ -27,28 +25,15 @@ class GPSWidget(QWidget):
         self.lblGPS.move(430, 15)
         self.lblGPS.setFont(QFont("Arial", 16))
 
-        self.directions_from = ""
-        self.directions_to = ""
-        self.directions_pitstop = ""
-        self.home_address = "targu mures, centru"
+        self.home_address = "cluj napoca, centru"
 
-        # Create the web view and load Google Maps
-        self.webview = QWebEngineView(self)
-        self.webview.setMinimumSize(400, 360)
-        self.load_google_maps()
+        self.navigation_state = False
+        self.route_active = False
+        self.pitstop_active = False
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(50, 50, 50, 50)
-        layout.addWidget(self.webview)
         layout.addStretch()
-
-    def load_google_maps(self):
-        if self.directions_pitstop == "":
-            map_url = f"https://www.google.com/maps/dir/{self.directions_from}/{self.directions_to}"
-        else:
-            map_url = f"https://www.google.com/maps/dir/{self.directions_from}/{self.directions_pitstop}/{self.directions_to}"
-        self.webview.setUrl(QUrl(map_url))
-
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -69,36 +54,95 @@ class GPSWidget(QWidget):
                 self.gohome_rect.y() <= y <= self.gohome_rect.y() + self.gohome_rect.height()):
             self.change_gohome()
 
-    def current_location(self):
-        driver = webdriver.Chrome()  # r'C:\Users\vlad.lazar\Downloads\chromedriver_win32\chromedriver.exe'
-        driver.set_window_position(2000, 2000)
-        driver.get(
-            "https://www.gps-coordinates.net/my-location")
-        sleep(2)
-
-        location = driver.find_element(By.XPATH,"/html/body/div[2]/div[2]/div[2]/div[2]/p/span")
-        current_location = location.text
-        driver.quit()
-        return current_location
-
     def change_gohome(self):
-        self.directions_from = self.current_location()
-        self.directions_pitstop = ""
-        self.directions_to = self.home_address
-        self.load_google_maps()
+        if not self.navigation_state:
+            self.open_navigation()
+        self.new_route(self.home_address)
 
     def change_home(self, new_home_address):
         self.home_address = new_home_address
 
     def change_pitstop(self, pitstop_address):
-        self.directions_pitstop = pitstop_address
-        self.load_google_maps()
+        if not self.navigation_state:
+            self.open_navigation()
+        self.add_pitstop(pitstop_address)
 
     def change_goaddress(self, directions_to):
-        self.directions_from = self.current_location()
-        self.directions_pitstop = ""
-        self.directions_to = directions_to
-        self.load_google_maps()
+        if not self.navigation_state:
+            self.open_navigation()
+        self.new_route(directions_to)
+
+    def new_route(self, to_p):
+        if self.route_active == True:
+            if self.pitstop_active == True:
+                try:
+                    cancel_pitstop = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/div[1]/div[3]/div[2]/button[2]')
+                    cancel_pitstop.click()
+                except Exception:
+                    sleep(0)
+                pass
+                self.pitstop_active = False
+            try:
+                place = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/div[1]/div[2]/div[2]/div[1]/div/input')
+                place.clear()
+                place.send_keys(to_p)
+
+                submit = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/div[1]/div[2]/div[2]/button[1]')
+                submit.click()
+            except Exception:
+                sleep(0)
+            pass
+        else:
+            try:
+                self.route_active = True
+                place = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[1]/div/div[2]/form/input[1]')
+                place.send_keys(to_p)
+
+                submit = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[1]/div/div[2]/div[2]/button/div')
+                submit.click()
+                sleep(2)
+
+                indicatii = self.driver.find_element(By.XPATH,'/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/div[1]/div[1]/div[2]/div[1]/div/input')
+                indicatii.click()
+
+                #seteaza ca punct de plecare locatia curenta
+                start_point = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div[2]/div[1]/div/div/div/div/div[2]/div/div/div[1]')
+                start_point.click()
+            except Exception:
+                sleep(0)
+            pass
+
+    def add_pitstop(self, pitstop_p):
+        self.pitstop_active = True
+        if not self.navigation_state:
+            self.open_navigation()
+        if not self.route_active:
+            print(f"Navigating to {pitstop_p}")
+            self.new_route(pitstop_p)
+        else:
+            sleep(2)
+            add_pitstop = self.driver.find_element(By.XPATH,'/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/button/div[1]/div')
+            add_pitstop.click()
+            sleep(2)
+
+            textbox_pitstop = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/div[1]/div[3]/div[2]/div[1]/div/input')
+            textbox_pitstop.send_keys(pitstop_p)
+            sleep(2)
+
+            enter_pitstop = self.driver.find_element(By.XPATH,'/html/body/div[3]/div[9]/div[3]/div[1]/div[2]/div/div[3]/div[1]/div[3]/div[2]/button[1]')
+            enter_pitstop.click()
+    def open_navigation(self):
+        self.navigation_state = True
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+
+        self.driver.get("https://www.google.com/maps/@46.7826949,23.6179692,14z?entry=ttu")
+        sleep(2)
+
+        accept = self.driver.find_element(By.XPATH,'/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button')
+        accept.click()
+        self.driver.fullscreen_window()
+        sleep(2)
 
 
 if __name__ == '__main__':
@@ -106,4 +150,6 @@ if __name__ == '__main__':
     widget_gps = GPSWidget()
     widget_gps.resize(1000, 500)
     widget_gps.show()
+    widget_gps.change_goaddress("Targu Mures")
+    widget_gps.add_pitstop("Brasov")
     sys.exit(app.exec_())
