@@ -49,7 +49,7 @@ class OpenAI(QThread):
             # reply = chat.choices[0].message.content
             reply = message
             reply = reply.casefold()
-            if self.first_run == False:
+            if not self.first_run:
                 self.speak_text_signal.emit(reply)
                 if reply.find("track") != -1:
                     num = re.findall(r'\d+', reply)
@@ -128,8 +128,11 @@ class OpenAI(QThread):
                 self.first_run = False
 
             # messages.append({"role": "assistant", "content": reply})
-            # message = self.write_text_signal.emit(1)
+            # message = "ERROR"
+            # while message == "ERROR":
+            #     message = self.write_text_signal.emit(1)
             message = input(">>")
+
 
 def parse_address(string, from_p):
     new_string = string[from_p:]

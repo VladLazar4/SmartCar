@@ -18,14 +18,15 @@ class VoiceAssistant():
                 audio2 = r.listen(source2)
                 print(audio2)
 
-                MyText = r.recognize_google(audio2)
-                MyText = MyText.lower()
+                my_text = r.recognize_google(audio2)
+                my_text = my_text.lower()
 
-                print("Did you say: ", MyText)
-                self.speak_text(MyText)
+                return my_text
 
         except sr.RequestError as e:
             print("Could not request results; {0}".format(e))
+            return "ERROR"
 
         except sr.UnknownValueError:
             print("unknown error occurred")
+            return "ERROR"
