@@ -44,7 +44,7 @@ class MainWidget(QWidget):
         self.openai.change_pitstop_signal.connect(self.gps.change_pitstop)
         self.openai.exit_navigation_signal.connect(self.gps.exit_navigation)
         self.openai.change_volume_signal.connect(self.media.change_volume)
-        self.openai.speak_text_signal.connect(self.voice_assistant.speak_text)
+        # self.openai.speak_text_signal.connect(self.voice_assistant.speak_text)
         # self.openai.write_text_signal.connect(self.voice_assistant.write_text)
         self.openai.start()
 
