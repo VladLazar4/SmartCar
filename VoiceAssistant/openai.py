@@ -2,6 +2,8 @@ import re
 import json
 import threading
 from urllib.request import urlopen
+
+from VoiceAssistant import voice_assistant
 from VoiceAssistant.voice_assistant import VoiceAssistant
 
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -33,24 +35,28 @@ class OpenAI(QThread):
     change_home_signal = pyqtSignal(str)
     change_goaddress_signal = pyqtSignal(str)
     change_pitstop_signal = pyqtSignal(str)
+    exit_navigation_signal = pyqtSignal(int)
 
     speak_text_signal = pyqtSignal(str)
     write_text_signal = pyqtSignal(int)
 
+
+
     def run(self):
-        message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is …), add pitstop…(R: pitstop added to…). For the following commands, your responses should be short, concise and respect exactly the pattern where it is specified that you have done the desired action. If you understood this task, just respond “OK”."
+        # message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is …), add pitstop…(R: pitstop added to…), exit navigation (R: exiting navigation). For the following commands, your responses should be short, concise and respect exactly the pattern where it is specified that you have done the desired action. If you understood this task, just respond “OK”."
+        message = "hello"
         self.first_run = True
         while True:
-            if message:
-                messages.append(
-                    {"role": "user", "content": message},
-                )
-                chat = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo", messages=messages
-                )
-            reply = chat.choices[0].message.content
-            print(f"Chat: {reply}")
-            # reply = message
+            # if message:
+            #     messages.append(
+            #         {"role": "user", "content": message},
+            #     )
+            #     chat = openai.ChatCompletion.create(
+            #         model="gpt-3.5-turbo", messages=messages
+            #     )
+            # reply = chat.choices[0].message.content
+            # print(f"Chat: {reply}")
+            reply = message
             reply = reply.casefold()
             if not self.first_run:
                 self.speak_text_signal.emit(reply)
@@ -127,16 +133,19 @@ class OpenAI(QThread):
                     self.change_goaddress_signal.emit(parse_address(reply, reply.find("to ") + 3))
                 elif reply.find("pitstop") != -1:
                     self.change_pitstop_signal.emit(parse_address(reply, reply.find("to ") + 3))
+                elif reply.find("exit")!=-1 and reply.find("navigation")!=-1:
+                    self.exit_navigation_signal(0)
             else:
                 self.first_run = False
 
             messages.append({"role": "assistant", "content": reply})
-            response_text_signal = ""
-            thread = threading.Thread(target=VoiceAssistant.write_text)
-            thread.start()
-            thread.join()
-            # self.write_text_signal.emit(message)
-            # message = input(">>")
+            thread_voice_input = threading.Thread(target=voice_assistant.write_text)
+            thread_voice_input.start()
+            thread_voice_input.join()
+            file = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
+            content = file.read()
+            result = content.split('\0')
+            message = result[0]
 
 
 def parse_address(string, from_p):
@@ -146,8 +155,10 @@ def parse_address(string, from_p):
 
 if __name__ == '__main__':
     file = open("./../file.txt", 'r+')
-    file.write("aaaaaaa")
+    file.write("aaaaaaa\0")
     file.seek(0)
-    file.write("bbb")
+    file.write("bbb\0")
     file.seek(0)
-    print(file.read())
+    content = file.read()
+    result = content.split('\0')
+    print(result[0])

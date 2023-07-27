@@ -42,9 +42,10 @@ class MainWidget(QWidget):
         self.openai.change_home_signal.connect(self.gps.change_home)
         self.openai.change_goaddress_signal.connect(self.gps.change_goaddress)
         self.openai.change_pitstop_signal.connect(self.gps.change_pitstop)
+        self.openai.exit_navigation_signal.connect(self.gps.exit_navigation)
         self.openai.change_volume_signal.connect(self.media.change_volume)
         self.openai.speak_text_signal.connect(self.voice_assistant.speak_text)
-        self.openai.write_text_signal.connect(self.voice_assistant.write_text)
+        # self.openai.write_text_signal.connect(self.voice_assistant.write_text)
         self.openai.start()
 
         self.initUI()
@@ -73,3 +74,13 @@ if __name__ == '__main__':
     window_ret = app.exec_()
     # measure_distance.kill_th()
     sys.exit(window_ret)
+
+
+#pip install pyqt5
+#pip install pyqtwebengine
+#pip install openai
+#pip install speechrecognition
+#pip install pyttsx3
+#pip install selenium
+#pip install pyaudio
+#pip install opencv-python

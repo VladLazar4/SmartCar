@@ -1,10 +1,10 @@
 import sys
 from time import sleep
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 from PyQt5.QtGui import QPainter, QColor, QBrush, QFont
-from PyQt5.QtCore import Qt, QRect, QUrl
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import Qt, QRect
+# from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -143,6 +143,10 @@ class GPSWidget(QWidget):
         accept.click()
         self.driver.fullscreen_window()
         sleep(2)
+
+    def exit_navigation(self):
+        self.navigation_state = False
+        self.driver.close()
 
 
 if __name__ == '__main__':
