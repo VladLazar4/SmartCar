@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QPainter, QColor, QBrush, QFont
+from PyQt5.QtGui import QPainter, QColor, QBrush, QFont, QImage, QPixmap
 from PyQt5.QtCore import Qt, QRect
 
 from collections import namedtuple

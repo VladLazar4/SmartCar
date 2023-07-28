@@ -8,9 +8,10 @@ from GUI import measure_distance
 from GUI.climatronic import ClimatronicWidget
 from GUI.media import MediaWidget
 from GUI.gps import GPSWidget
+from GUI.face_recognition import FaceRecognitionWidget
 from GUI.parking_sensors import ParkingSensorsWidget
 from VoiceAssistant.openai import OpenAI
-from VoiceAssistant.voice_assistant import VoiceAssistant
+# from VoiceAssistant.voice_assistant import VoiceAssistant
 
 
 class MainWidget(QWidget):
@@ -21,9 +22,10 @@ class MainWidget(QWidget):
         self.climatronic = ClimatronicWidget()
         self.media = MediaWidget()
         self.gps = GPSWidget()
+        self.face_recognition = FaceRecognitionWidget()
         self.parking_sensors = ParkingSensorsWidget()
         self.openai = OpenAI()
-        self.voice_assistant = VoiceAssistant()
+        # self.voice_assistant = VoiceAssistant()
 
         self.openai.turn_on_ac_signal.connect(self.climatronic.turn_on_ac)
         self.openai.turn_off_ac_signal.connect(self.climatronic.turn_off_ac)
@@ -57,7 +59,7 @@ class MainWidget(QWidget):
 
         layout.addWidget(self.climatronic, 0, 0)
         layout.addWidget(self.media, 1, 0)
-        layout.addWidget(self.gps, 0, 1)
+        layout.addWidget(self.face_recognition, 0, 1)
         layout.addWidget(self.parking_sensors, 1, 1)
 
         self.setLayout(layout)

@@ -1,0 +1,8 @@
+pyqt5
+pyqtwebengine
+openai
+speechrecognition
+pyttsx3
+selenium
+pyaudio
+opencv-python

@@ -5,9 +5,10 @@ import pyttsx3
 
 r = sr.Recognizer()
 
-# file = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'w')
-file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'w')
-file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'r')
+file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'w')
+file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'r')
+# file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'w')
+# file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'r')
 def write_text():
     try:
         with sr.Microphone() as source2:
@@ -16,11 +17,11 @@ def write_text():
             valid_text = False
             while valid_text == False:
                 print("Listening..")
-                audio2 = r.listen(source2)
+                # audio2 = r.listen(source2)
                 try:
-                    # my_text = input(">>")
-                    my_text = r.recognize_google(audio2)
-                    my_text = my_text.lower()
+                    my_text = input(">>")
+                    # my_text = r.recognize_google(audio2)
+                    # my_text = my_text.lower()
 
                     # if my_text.strip():
                     if my_text != "0":
@@ -41,7 +42,7 @@ def write_text():
 
 def speak_text():
     engine = pyttsx3.init()
-    content = file.read()
+    content = file_output.read()
     result = content.split('\0')
     command = result[0]
     engine.say(command)
@@ -50,5 +51,6 @@ def speak_text():
 
 
 if __name__ == '__main__':
-    v = VoiceAssistant()
-    v.speak_text("hello")
+    # v = VoiceAssistant()
+    # v.speak_text("hello")
+    print(1)
