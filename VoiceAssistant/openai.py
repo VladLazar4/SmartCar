@@ -16,10 +16,10 @@ messages = [{"role": "system", "content":
     "You are a intelligent assistant."}]
 
 
-file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
-file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'w')
-# file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
-# file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'w')
+# file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
+# file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'w')
+file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
+file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'w')
 
 class OpenAI(QThread):
     turn_on_ac_signal = pyqtSignal(int)
@@ -47,25 +47,28 @@ class OpenAI(QThread):
 
 
     def run(self):
-        # message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is …), add pitstop…(R: pitstop added to…), exit navigation (R: exiting navigation). For the following commands, your responses should be short, concise and respect exactly the pattern where it is specified that you have done the desired action. If you understood this task, just respond “OK”."
-        message = "hello"
+        message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is …), add pitstop…(R: pitstop added to…), exit navigation (R: exiting navigation). For the following commands, your responses should be short, concise and respect exactly the pattern where it is specified that you have done the desired action. If you understood this task, just respond “OK”."
+        # message = "hello"
         self.first_run = True
         while True:
-            # if message:
-            #     messages.append(
-            #         {"role": "user", "content": message},
-            #     )
-            #     chat = openai.ChatCompletion.create(
-            #         model="gpt-3.5-turbo", messages=messages
-            #     )
-            # reply = chat.choices[0].message.content
-            # print(f"Chat: {reply}")
-            reply = message
+            if message:
+                messages.append(
+                    {"role": "user", "content": message},
+                )
+                chat = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo", messages=messages
+                )
+            reply = chat.choices[0].message.content
+            # reply = message
             reply = reply.casefold()
             if not self.first_run:
-                # self.speak_text_signal.emit(reply)
                 file_output.seek(0)
                 file_output.write(reply)
+                file_output.write("\0")
+                file_output.flush()
+                thread_voice_output = threading.Thread(target=voice_assistant.speak_text)
+                thread_voice_output.start()
+                thread_voice_output.join()
                 if reply.find("track") != -1:
                     num = re.findall(r'\d+', reply)
                     self.change_cd_signal.emit(1)
@@ -148,8 +151,8 @@ class OpenAI(QThread):
             thread_voice_input = threading.Thread(target=voice_assistant.write_text)
             thread_voice_input.start()
             thread_voice_input.join()
-            file = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
-            content = file.read()
+            file_input.seek(0)
+            content = file_input.read()
             result = content.split('\0')
             message = result[0]
 
@@ -160,11 +163,12 @@ def parse_address(string, from_p):
 
 
 if __name__ == '__main__':
-    file = open("./../file.txt", 'r+')
-    file.write("aaaaaaa\0")
-    file.seek(0)
-    file.write("bbb\0")
-    file.seek(0)
-    content = file.read()
-    result = content.split('\0')
-    print(result[0])
+    # file = open("./../file.txt", 'r+')
+    # file.write("aaaaaaa\0")
+    # file.seek(0)
+    # file.write("bbb\0")
+    # file.seek(0)
+    # content = file.read()
+    # result = content.split('\0')
+    # print(result[0])
+    print(1)
