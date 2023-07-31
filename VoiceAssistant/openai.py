@@ -16,10 +16,10 @@ messages = [{"role": "system", "content":
     "You are a intelligent assistant."}]
 
 
-# file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
-# file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'w')
-file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
-file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'w')
+file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
+file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'w')
+# file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
+# file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'w')
 
 class OpenAI(QThread):
     turn_on_ac_signal = pyqtSignal(int)
@@ -47,8 +47,8 @@ class OpenAI(QThread):
 
 
     def run(self):
-        message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is …), add pitstop…(R: pitstop added to…), exit navigation (R: exiting navigation). For the following commands, your responses should be short, concise and respect exactly the pattern where it is specified that you have done the desired action. If you understood this task, just respond “OK”."
-        # message = "hello"
+        # message = "I want you to learn some responses that I expect from you when I ask some tasks. Linked to a climatronic: turn on/off the ac, turn on/off the heat for the left/right seat, or change ventilation to a specific intensity 0-10, or the temperature 17-27 degrees. Linked to media: change the source to radio/bluetooth/cd, set the radio/song/track between 1-10, change the volume 0-10. Linked to maps: go to…, go home, new home address is…(R: new home address is …), add pitstop…(R: pitstop added to…), exit navigation (R: exiting navigation). For the following commands, your responses should be short, concise and respect exactly the pattern where it is specified that you have done the desired action. If you understood this task, just respond “OK”."
+        message = "hello"
         self.first_run = True
         while True:
             if message:
