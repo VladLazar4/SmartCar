@@ -16,10 +16,11 @@ messages = [{"role": "system", "content":
     "You are a intelligent assistant."}]
 
 
-file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
-file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'w')
-# file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
-# file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'w')
+# file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'r')
+# file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'w')
+
+file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'r')
+file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'w')
 
 class OpenAI(QThread):
     turn_on_ac_signal = pyqtSignal(int)
@@ -41,7 +42,6 @@ class OpenAI(QThread):
     change_goaddress_signal = pyqtSignal(str)
     change_pitstop_signal = pyqtSignal(str)
     exit_navigation_signal = pyqtSignal(int)
-
     speak_text_signal = pyqtSignal(str)
     write_text_signal = pyqtSignal(int)
 

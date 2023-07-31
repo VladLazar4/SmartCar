@@ -6,3 +6,4 @@ pyttsx3
 selenium
 pyaudio
 opencv-python
+keyboard

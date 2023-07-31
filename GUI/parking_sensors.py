@@ -3,7 +3,7 @@ import time
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QProgressBar, QPushButton, QLabel
-from PyQt5.QtGui import QPainter, QColor, QFont
+from PyQt5.QtGui import QPainter, QColor, QFont, QPixmap, QImage
 from PyQt5.QtCore import Qt, pyqtSlot
 from GUI.measure_distance import start_run_rear, start_run_front
 
@@ -33,6 +33,12 @@ class ParkingSensorsWidget(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout()
+
+        self.mic_label = QLabel()
+        self.mic_label.setFixedSize(100, 100)
+        self.mic_label.move(0, 0)
+        layout.addWidget(self.mic_label, alignment=Qt.AlignCenter)
+
         layout.setGeometry((QtCore.QRect(0, 0, 300, 300)))
 
         # initialize progress bar for front sensor
@@ -187,6 +193,13 @@ class ParkingSensorsWidget(QWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(QColor(137, 205, 245))
         painter.drawRoundedRect(self.rect(), 10, 10)
+
+
+    def show_mic(self):
+        self.mic_label.setPixmap(QPixmap.fromImage(QImage("mic.png")))
+
+    def hide_mic(self):
+        self.mic_label.setPixmap(QPixmap.fromImage(QImage()))
 
 
 if __name__ == '__main__':

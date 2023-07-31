@@ -2,18 +2,19 @@ import threading
 import keyboard
 from time import sleep
 
+import self as self
 import speech_recognition as sr
 import pyttsx3
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 
 r = sr.Recognizer()
 
-file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'w')
-file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'r')
+# file_input = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_input.txt", 'w')
+# file_output = open(r"C:\Users\vlad.lazar\Desktop\SmartCar\voice_output.txt", 'r')
 
 
-# file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'w')
-# file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'r')
+file_input = open(r"D:\Vlad\SmartCar\voice_input.txt", 'w')
+file_output = open(r"D:\Vlad\SmartCar\voice_output.txt", 'r')
 
 waiting_time = 30
 timer_active = False
@@ -27,10 +28,10 @@ def unlock_assistant():
             valid_text = False
             while valid_text == False:
                 print("Listening..")
-                # audio2 = r.listen(source2)
+                audio2 = r.listen(source2)
                 try:
-                    # my_text = r.recognize_google(audio2)
-                    my_text = input(">>")
+                    my_text = r.recognize_google(audio2)
+                    # my_text = input(">>")
                     my_text = my_text.lower()
 
                     if my_text == "hello":
@@ -63,8 +64,8 @@ def write_text():
                 if waiting_time:
                     audio2 = r.listen(source2)
                     try:
-                        my_text = input(">>")
-                        # my_text = r.recognize_google(audio2)
+                        # my_text = input(">>")
+                        my_text = r.recognize_google(audio2)
                         my_text = my_text.lower()
 
                         if my_text != "0":
@@ -102,17 +103,25 @@ def speak_text_(text):
     engine.say(text)
     engine.runAndWait()
 
-
 def start_timer():
-    global waiting_time, timer_active
-    waiting_time = 30
-    while waiting_time:
-        # print(waiting_time)
-        sleep(1)
-        waiting_time -= 1
-    timer_active = False
+    v = VoiceAssistant()
+    v.run()
+
+class VoiceAssistant(QThread):
+    show_mic_signal = pyqtSignal(int)
+    hide_mic_signal = pyqtSignal(int)
+    def run(self):
+        global waiting_time, timer_active
+        waiting_time = 30
+        self.show_mic_signal.emit(1)
+        while waiting_time:
+            # print(waiting_time)
+            sleep(1)
+            waiting_time -= 1
+        timer_active = False
+        self.hide_mic_signal.emit(1)
 
 
 if __name__ == '__main__':
-    start_timer()
+    # start_timer()
     print(1)

@@ -11,6 +11,7 @@ from GUI.gps import GPSWidget
 from GUI.face_recognition import FaceRecognitionWidget
 from GUI.parking_sensors import ParkingSensorsWidget
 from VoiceAssistant.openai import OpenAI
+from VoiceAssistant.voice_assistant import VoiceAssistant
 # from VoiceAssistant.voice_assistant import VoiceAssistant
 
 
@@ -25,7 +26,7 @@ class MainWidget(QWidget):
         self.face_recognition = FaceRecognitionWidget()
         self.parking_sensors = ParkingSensorsWidget()
         self.openai = OpenAI()
-        # self.voice_assistant = VoiceAssistant()
+        self.voice_assistant = VoiceAssistant()
 
         self.openai.turn_on_ac_signal.connect(self.climatronic.turn_on_ac)
         self.openai.turn_off_ac_signal.connect(self.climatronic.turn_off_ac)
@@ -46,8 +47,10 @@ class MainWidget(QWidget):
         self.openai.change_pitstop_signal.connect(self.gps.change_pitstop)
         self.openai.exit_navigation_signal.connect(self.gps.exit_navigation)
         self.openai.change_volume_signal.connect(self.media.change_volume)
-        # self.openai.speak_text_signal.connect(self.voice_assistant.speak_text)
-        # self.openai.write_text_signal.connect(self.voice_assistant.write_text)
+
+        self.voice_assistant.show_mic_signal.connect(self.parking_sensors.show_mic)
+        self.voice_assistant.hide_mic_signal.connect(self.parking_sensors.hide_mic)
+
         self.openai.start()
 
         self.initUI()

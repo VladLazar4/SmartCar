@@ -2,7 +2,7 @@ import sys
 from time import sleep
 
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
-from PyQt5.QtGui import QPainter, QColor, QBrush, QFont
+from PyQt5.QtGui import QPainter, QColor, QBrush, QFont, QPixmap, QImage
 from PyQt5.QtCore import Qt, QRect
 # from PyQt5.QtWebEngineWidgets import QWebEngineView
 
@@ -31,9 +31,9 @@ class GPSWidget(QWidget):
         self.route_active = False
         self.pitstop_active = False
 
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(50, 50, 50, 50)
-        layout.addStretch()
+        self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(50, 50, 50, 50)
+        self.layout.addStretch()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -154,6 +154,6 @@ if __name__ == '__main__':
     widget_gps = GPSWidget()
     widget_gps.resize(1000, 500)
     widget_gps.show()
-    widget_gps.change_goaddress("Targu Mures")
-    widget_gps.add_pitstop("Brasov")
+    # widget_gps.change_goaddress("Targu Mures")
+    # widget_gps.add_pitstop("Brasov")
     sys.exit(app.exec_())
