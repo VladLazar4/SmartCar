@@ -29,15 +29,11 @@ class ParkingSensorsWidget(QWidget):
 
         self.sensor_sensibility = 30
 
-        self.setup_ui()
+        layout = QVBoxLayout(self)
 
-    def setup_ui(self):
-        layout = QVBoxLayout()
+        self.setup_ui(layout)
 
-        self.mic_label = QLabel()
-        self.mic_label.setFixedSize(100, 100)
-        self.mic_label.move(0, 0)
-        layout.addWidget(self.mic_label, alignment=Qt.AlignCenter)
+    def setup_ui(self, layout):
 
         layout.setGeometry((QtCore.QRect(0, 0, 300, 300)))
 
@@ -195,15 +191,10 @@ class ParkingSensorsWidget(QWidget):
         painter.drawRoundedRect(self.rect(), 10, 10)
 
 
-    def show_mic(self):
-        self.mic_label.setPixmap(QPixmap.fromImage(QImage("mic.png")))
-
-    def hide_mic(self):
-        self.mic_label.setPixmap(QPixmap.fromImage(QImage()))
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     widget = ParkingSensorsWidget()
+    widget.resize(1000, 500)
     widget.show()
     sys.exit(app.exec_())

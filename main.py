@@ -4,14 +4,12 @@ import time
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout
 
-from GUI import measure_distance
 from GUI.climatronic import ClimatronicWidget
 from GUI.media import MediaWidget
 from GUI.gps import GPSWidget
 from GUI.face_recognition import FaceRecognitionWidget
 from GUI.parking_sensors import ParkingSensorsWidget
 from VoiceAssistant.openai import OpenAI
-from VoiceAssistant.voice_assistant import VoiceAssistant
 # from VoiceAssistant.voice_assistant import VoiceAssistant
 
 
@@ -26,7 +24,7 @@ class MainWidget(QWidget):
         self.face_recognition = FaceRecognitionWidget()
         self.parking_sensors = ParkingSensorsWidget()
         self.openai = OpenAI()
-        self.voice_assistant = VoiceAssistant()
+        # self.voice_assistant = VoiceAssistant()
 
         self.openai.turn_on_ac_signal.connect(self.climatronic.turn_on_ac)
         self.openai.turn_off_ac_signal.connect(self.climatronic.turn_off_ac)
@@ -48,10 +46,11 @@ class MainWidget(QWidget):
         self.openai.exit_navigation_signal.connect(self.gps.exit_navigation)
         self.openai.change_volume_signal.connect(self.media.change_volume)
 
-        self.voice_assistant.show_mic_signal.connect(self.parking_sensors.show_mic)
-        self.voice_assistant.hide_mic_signal.connect(self.parking_sensors.hide_mic)
+        # self.voice_assistant.show_mic_signal.connect(self.climatronic.show_mic)
+        # self.voice_assistant.hide_mic_signal.connect(self.climatronic.hide_mic)
 
         self.openai.start()
+        # self.voice_assistant.start()
 
         self.initUI()
 
@@ -76,8 +75,8 @@ if __name__ == '__main__':
     widget = MainWidget()
     widget.showMaximized()
     widget.show()
+    # widget.parking_sensors.show_mic()
     window_ret = app.exec_()
-    # measure_distance.kill_th()
     sys.exit(window_ret)
 
 

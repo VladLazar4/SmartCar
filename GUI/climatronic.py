@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 from PyQt5.QtGui import QPainter, QColor, QBrush, QFont, QImage, QPixmap
 from PyQt5.QtCore import Qt, QRect
 
@@ -66,6 +66,19 @@ class ClimatronicWidget(QWidget):
         self.lblClimatronic = QLabel("Climatronic", self)
         self.lblClimatronic.move(430, 15)
         self.lblClimatronic.setFont(QFont("Arial", 16))
+
+        layout = QVBoxLayout(self)
+        self.mic_label = QLabel()
+        self.mic_label.setGeometry(100, 100, 100, 100)
+        layout.addWidget(self.mic_label)
+        self.setLayout(layout)
+
+    def show_mic(self):
+        self.mic_label.setPixmap(QPixmap.fromImage(QImage(r"C:\Users\vlad.lazar\Desktop\SmartCar\mic.png")))
+
+
+    def hide_mic(self):
+        self.mic_label.setPixmap(QPixmap.fromImage(QImage()))
 
     def paintEvent(self, event):
         painter = QPainter(self)
